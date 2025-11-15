@@ -1,4 +1,5 @@
-#!/bin/sh
+#!/bin/bash
+set -e
 
 if [ -n "${ADDITIONAL_PACKAGES}" ]; then
     TO_BE_INSTALLED=$(echo ${ADDITIONAL_PACKAGES} | tr "," " " )
@@ -57,10 +58,9 @@ remove() {
     ./config.sh remove --unattended --token "${REMOVE_TOKEN}"
 }
 
-trap 'remove; exit 130' INT
-trap 'remove; exit 143' TERM
-
-./runsvc.sh "$*" &
+trap "cleanup" SIGINT SIGTERM
+# Runner starten
+./run.sh &
 
 wait $!
 
